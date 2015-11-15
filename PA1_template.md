@@ -1,18 +1,15 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 ## Global Setting
-```{r setoptions, echo=TRUE}
+
+```r
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, fig.path='figure/')
 ```
 
 
 ## Loading and preprocessing the data
-```{r readData}
+
+```r
 if(!file.exists("activity.csv")) {
     unzip("activity.zip")    
 }
@@ -21,9 +18,21 @@ readData <- read.table("activity.csv", sep = ",", header = T)
 summary(readData)
 ```
 
+```
+##      steps                date          interval     
+##  Min.   :  0.00   2012-10-01:  288   Min.   :   0.0  
+##  1st Qu.:  0.00   2012-10-02:  288   1st Qu.: 588.8  
+##  Median :  0.00   2012-10-03:  288   Median :1177.5  
+##  Mean   : 37.38   2012-10-04:  288   Mean   :1177.5  
+##  3rd Qu.: 12.00   2012-10-05:  288   3rd Qu.:1766.2  
+##  Max.   :806.00   2012-10-06:  288   Max.   :2355.0  
+##  NA's   :2304     (Other)   :15840
+```
+
 
 ## What is mean total number of steps taken per day?
-```{r computeTotalSteps}
+
+```r
 require(ggplot2)
 getActivityTotalStep <- function(data) {
     dailySum <- aggregate(data$steps, by=list(data$date), FUN=sum, na.rm=T)
@@ -43,11 +52,14 @@ getActivityTotalStep <- function(data) {
 dailyTotal <- getActivityTotalStep(readData)
 ```
 
-The historgram chart show the steps taken per day, with average steps of **`r dailyTotal$daily.mean`** with median of **`r dailyTotal$daily.median`** per day.
+![](figure/computeTotalSteps-1.png) 
+
+The historgram chart show the steps taken per day, with average steps of **9354.2295082** with median of **10395** per day.
 
 
 ## What is the average daily activity pattern?
-```{r computeAvg}
+
+```r
 getActivityPattern <- function(data) {
     dailyAvg <- aggregate(data$steps, by=list(data$interval), FUN=mean, na.rm=T)
     colnames(dailyAvg) <- c("interval", "avg")
@@ -65,11 +77,14 @@ getActivityPattern <- function(data) {
 dailyPattern <- getActivityPattern(readData)
 ```
 
-On average across all the days in the dataset, the 5-minute interval that contains the maximum number of steps was found in interval **`r dailyPattern$daily.maxInterval`** with an average steps of **`r dailyPattern$daily.maxAvg`**.  
+![](figure/computeAvg-1.png) 
+
+On average across all the days in the dataset, the 5-minute interval that contains the maximum number of steps was found in interval **835** with an average steps of **206.1698113**.  
 
 
 ## Imputing missing values
-```{r computeNA}
+
+```r
 getImputingData <- function(data, dailyPattern) {
     naCount <- nrow(data[!complete.cases(data), ])
     newData <- data
@@ -87,11 +102,14 @@ imputeData <- getImputingData(readData, dailyPattern)
 newDailyTotal <- getActivityTotalStep(imputeData)
 ```
 
-The new historgram chart show the steps taken per day after NA steps are imputed, with total missing data **`r missing`**. We notice that average and median increases. New average steps **`r newDailyTotal$daily.mean`** vs old average steps **`r dailyTotal$daily.mean`**. New median **`r newDailyTotal$daily.median`** vs old median **`r dailyTotal$daily.median`**
+![](figure/computeNA-1.png) 
+
+The new historgram chart show the steps taken per day after NA steps are imputed, with total missing data **2304**. We notice that average and median increases. New average steps **1.0766189\times 10^{4}** vs old average steps **9354.2295082**. New median **1.0766189\times 10^{4}** vs old median **10395**
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
-```{r computeWeekday}
+
+```r
 getWeekdayData <- function(data) {
     
     mydata <- data
@@ -114,6 +132,6 @@ weekdayAvg <- getWeekdayData(imputeData)
 
 require(lattice)
 xyplot(weekdayAvg$Avg.steps ~ weekdayAvg$Interval | Weekday, weekdayAvg, type = "l", layout = c(1, 2), xlab = "Interval", ylab = "Number of steps")
-
-
 ```
+
+![](figure/computeWeekday-1.png) 
