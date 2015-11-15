@@ -90,6 +90,7 @@ getImputingData <- function(data, dailyPattern) {
     newData <- data
     naIndex <- which(!complete.cases(data))
 
+    # Strategy: Mean for that 5-minute interval.
     for (i in naIndex) {
         newData[i, ]$steps <- dailyPattern$daily.avg[dailyPattern$daily.avg$interval == newData[i, ]$interval, ]$avg
     }
@@ -106,6 +107,7 @@ newDailyTotal <- getActivityTotalStep(imputeData)
 
 The new historgram chart show the steps taken per day after NA steps are imputed, with total missing data **2304**. We notice that average and median increases. New average steps **1.0766189\times 10^{4}** vs old average steps **9354.2295082**. New median **1.0766189\times 10^{4}** vs old median **10395**
 
+The strategy to impute data is using mean for that 5-minute interval.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -135,3 +137,5 @@ xyplot(weekdayAvg$Avg.steps ~ weekdayAvg$Interval | Weekday, weekdayAvg, type = 
 ```
 
 ![](figure/computeWeekday-1.png) 
+
+Comparing Weekday and Weekend, the front interval of the day during weekday having more steps compare to weekend, where during weekend the steps distribution is more even during activity period.
